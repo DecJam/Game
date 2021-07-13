@@ -1,5 +1,6 @@
 #include "Game2D.h"
 
+
 #include "Application.h"
 #include "Texture.h"
 #include "Font.h"
@@ -12,6 +13,10 @@ Game2D::Game2D(const char* title, int width, int height, bool fullscreen) : Game
 	// Initalise the 2D renderer.
 	m_2dRenderer = new aie::Renderer2D();
 	pathfinder = new PathFinder();
+	start = new GridNode();
+	end = new GridNode();
+	start->placed = false;
+	end->placed = false;
 	//// Create some textures for testing.
 	//m_texture = new aie::Texture("./textures/hero.png");
 	//m_texture2 = new aie::Texture("./textures/rock_large.png");
@@ -44,7 +49,6 @@ void Game2D::Update(float deltaTime)
 	float camPosY;
 
 	m_2dRenderer->GetCameraPos(camPosX, camPosY);
-
 	/*if (input->IsKeyDown(aie::INPUT_KEY_W))
 		camPosY += 500.0f * deltaTime;
 
@@ -59,6 +63,52 @@ void Game2D::Update(float deltaTime)
 
 	m_2dRenderer->SetCameraPos(camPosX, camPosY);
 
+	// Places start point
+	if (input->IsMouseButtonDown(aie::INPUT_MOUSE_BUTTON_LEFT))
+	{
+		if ((input->GetMouseX()) >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0)
+		{
+			
+			start->placed = false;
+			
+		}
+		else
+		{
+			start->position.x = input->GetMouseX() / NODE_SIZE;
+			start->position.y = input->GetMouseY() / NODE_SIZE;
+			start->placed = true;
+		}
+	}
+
+	// Places end point
+	if (input->IsMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT))
+	{
+		if (input->GetMouseX() >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0)
+		{
+			end->placed = false;
+		}
+		else
+		{
+			end->position.x = input->GetMouseX() / NODE_SIZE;
+			end->position.y = input->GetMouseY() / NODE_SIZE;
+			end->placed = true;
+		}
+	}
+
+	if (input->IsMouseButtonDown(aie::INPUT_MOUSE_BUTTON_MIDDLE))
+	{
+		if (input->GetMouseX() >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0)
+		{
+			
+		}
+		else
+		{
+			int x = input->GetMouseX() / NODE_SIZE;
+			int y = input->GetMouseY() / NODE_SIZE;
+			pathfinder->SetBlocked(x, y);
+		}
+
+	}
 	// Exit the application if escape is pressed.
 	if (input->IsKeyDown(aie::INPUT_KEY_ESCAPE))
 	{
@@ -78,7 +128,14 @@ void Game2D::Draw()
 	// Prepare the renderer. This must be called before any sprites are drawn.
 	m_2dRenderer->Begin();
 
-	pathfinder->Draw(m_2dRenderer);
+	pathfinder->DrawGrid(m_2dRenderer);
+	pathfinder->DrawStart(m_2dRenderer, start);
+	pathfinder->DrawEnd(m_2dRenderer, end);
+
+	if (start->placed == true && end->placed == true)
+	{
+		pathfinder->PathFind(m_2dRenderer, start, end);
+	}
 
 	//// Draw the player.
 	//m_Player->Draw(m_2dRenderer);

@@ -42,7 +42,7 @@ public:
 			m_Data[i + 1] = m_Data[i];
 		}
 
-		// Inserts the dta into the element
+		// Inserts the data into the element
 		m_Data[index] = value;
 		m_UsedElements++;
 	}

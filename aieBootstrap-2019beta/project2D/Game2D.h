@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game.h"
+#include "GridNode.h"
 #include "Renderer2D.h"
 #include "PathFinder.h"
 
@@ -15,10 +16,13 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void Draw();
 
+
 protected:
 	aie::Renderer2D* m_2dRenderer;
 
 	PathFinder* pathfinder;
+	GridNode* start;
+	GridNode* end;
 
 	// Example textures.
 	//aie::Texture*		m_texture;

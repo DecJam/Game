@@ -12,13 +12,13 @@ public:
 	~Heap();
 	
 	// Adds a node to the top of the heap
-	void Push(GridNode grid);
+	void Push(GridNode* grid);
 
 	// Prints a specific node
 	void Print(GridNode* grid);
 
 	// Returns and removes the top node
-	int Pop();
+	GridNode* Pop();
 
 	// Returns the top node
 	int Peek();
@@ -33,6 +33,7 @@ public:
 	void Clear();
 
 private:
+
 	// Returns the parent index
 	int GetParentIndex(int nIndex);
 
@@ -43,5 +44,5 @@ private:
 	int GetChild2Index(int nIndex);
 
 	// The heaps storage
-	DynamicArray<GridNode> m_Data;
+	DynamicArray<GridNode*> m_Data;
 };

@@ -4,7 +4,7 @@
 // Heap's constructor	
 Heap::Heap()
 {
-
+	
 }
 
 // Heap's Destructor
@@ -14,7 +14,7 @@ Heap::~Heap()
 }
 
 // Adds a value to the stack
-void Heap::Push(GridNode nValue)
+void Heap::Push(GridNode* nValue)
 {
 	// Adds to the array
 	m_Data.Add(nValue);
@@ -23,10 +23,10 @@ void Heap::Push(GridNode nValue)
 	int parentIndex = GetParentIndex(currentIndex);
 	
 	// Sorts the stack so that lower numbers apear first
-	while (parentIndex >= 0 && m_Data[parentIndex].score.f > m_Data[currentIndex].score.f)
+	while (parentIndex >= 0 && m_Data[parentIndex]->score.f > m_Data[currentIndex]->score.f)
 	{
-		m_Data[currentIndex].score.f = m_Data[parentIndex].score.f;
-		m_Data[parentIndex].score.f = nValue.score.f;
+		m_Data[currentIndex] = m_Data[parentIndex];
+		m_Data[parentIndex] = nValue;
 		currentIndex = parentIndex;
 		parentIndex = GetParentIndex(currentIndex);
 	}
@@ -39,12 +39,12 @@ void Heap::Print(GridNode* value)
 }
 
 // Returns the first value and removes it from the array
-int Heap::Pop()
+GridNode* Heap::Pop()
 {
 	if (Size() > 0)
 	{
 		// Removing the first value 
-		GridNode result = m_Data[0];
+		GridNode* result = m_Data[0];
 		m_Data[0] = m_Data[Size() - 1];
 		m_Data.RemoveAt(Size()-1);
 
@@ -53,7 +53,7 @@ int Heap::Pop()
 		int child1Index = GetChild1Index(parentIndex);
 		int child2Index = GetChild2Index(parentIndex);
 		int childIndex;
-		int temp;
+		GridNode* temp;
 		
 		// If the perant has a child
 		while (Exists(child1Index))
@@ -62,18 +62,18 @@ int Heap::Pop()
 
 			if (Exists(child2Index))
 			{
-				if (m_Data[child1Index].score.f > m_Data[child2Index].score.f)
+				if (m_Data[child1Index]->score.f > m_Data[child2Index]->score.f)
 				{
-					childIndex = child2Index;
+					childIndex = child2Index; 
 				}
 			}
 			
 			// If needed to swap, swaps
-			if (m_Data[childIndex].score.f < m_Data[parentIndex].score.f)
+			if (m_Data[childIndex]->score.f < m_Data[parentIndex]->score.f)
 			{
-				temp = m_Data[childIndex].score.f;
-				m_Data[childIndex].score.f = m_Data[parentIndex].score.f;
-				m_Data[parentIndex].score.f = temp; 
+				temp = m_Data[childIndex];
+				m_Data[childIndex] = m_Data[parentIndex];
+				m_Data[parentIndex] = temp; 
 
 				parentIndex = childIndex;
 				child1Index = GetChild1Index(parentIndex);
@@ -85,11 +85,12 @@ int Heap::Pop()
 				break;
 			}
 		}
+		return result;
 	}
 	
 	else
 	{
-		return - 1;
+		return nullptr;
 	}
 }
 
@@ -98,12 +99,12 @@ int Heap::Peek()
 {
 	if (Size() > 0)
 	{
-		return m_Data[0].score.f;
+		return m_Data[0]->score.f;
 	}
 
 	else
 	{
-		return -1;
+		throw "bad";
 	}
 }
 

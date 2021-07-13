@@ -5,9 +5,8 @@
 #include "Renderer2D.h"
 
 #define NEIGHBOUR_COUNT 8
-#define GRID_HEIGHT 50
-#define GRID_WIDTH 50
-#define NODE_SIZE 10
+#define GRID_SIZE 100
+#define NODE_SIZE 8
 
 class PathFinder
 {
@@ -15,15 +14,27 @@ public:
 	PathFinder();
 	~PathFinder();
 
-	void Draw(aie::Renderer2D* renderer);
-	void PathFind(aie::Renderer2D* renderer);
+	void DrawGrid(aie::Renderer2D* renderer);
+	void DrawStart(aie::Renderer2D* renderer, GridNode* start);
+	void DrawEnd(aie::Renderer2D* renderer, GridNode* end);
+	void DrawBlocked(aie::Renderer2D* renderer);
+	void PathFind(aie::Renderer2D* renderer, GridNode* start, GridNode* end);
+	GridNode* GetNeighbour(int currentX, int currentY, int neighbour);
+	GridNode* GetNodeByPos(int x, int y);
+	bool DijkstrasPath(int startX, int startY, int endX, int endY, DynamicArray<GridNode*>& finalPath);
+	bool ScuffedDijkstrasPath(int startX, int startY, int endX, int endY, DynamicArray<GridNode*>& finalPath);
 
+	bool AStar(int startX, int startY, int endX, int endY, DynamicArray<GridNode*>& finalPath);
 
-	GridNode* grid[GRID_HEIGHT][GRID_WIDTH];
+	void SetBlocked(int x, int y);
+
 
 private:
 
-	Heap closedList;
-	Heap openList;
+	GridNode* grid[GRID_SIZE][GRID_SIZE];
+	bool inClosedList[GRID_SIZE][GRID_SIZE] = { 0 };
+	bool inOpenList[GRID_SIZE][GRID_SIZE] = { 0 };
+	DynamicArray<GridNode*> finalPath;
+	Heap* openList;
 };
 
