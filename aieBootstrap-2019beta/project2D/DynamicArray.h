@@ -148,7 +148,7 @@ private:
 			// Transfers data from one array tothe other
 			std::memcpy(newData, m_Data, sizeof(T) * m_UsedElements);
 
-			delete[] m_Data;
+			delete m_Data;
 			m_Data = newData;
 		}
 	}

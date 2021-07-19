@@ -1,13 +1,10 @@
 #pragma once
+#include "Vector2.h"
 
 struct GridNode
 {
-	struct Position
-	{
-		int x;
-		int y;
-	};
 
+	// Scores for pathfinding
 	struct Scores
 	{
 		int f;
@@ -15,11 +12,20 @@ struct GridNode
 		int g;
 	};
 	
+	// If the node has been placed
 	bool placed;
-	Position position;
+
+	// The nodes position 
+	Vector2 position;
+
+	// The nodes scores
 	Scores score;
-	int traversalCost;
+
+	// The Nodes previos node
 	GridNode* previous;
+
+	// Is the node able to be crossed?
 	bool traversable;
+
 };
 

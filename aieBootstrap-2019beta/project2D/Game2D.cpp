@@ -1,115 +1,130 @@
 #include "Game2D.h"
-
-
 #include "Application.h"
 #include "Texture.h"
 #include "Font.h"
 #include "Input.h"
 
-
-
+// Starts the game
 Game2D::Game2D(const char* title, int width, int height, bool fullscreen) : Game(title, width, height, fullscreen)
 {
 	// Initalise the 2D renderer.
-	m_2dRenderer = new aie::Renderer2D();
-	pathfinder = new PathFinder();
-	start = new GridNode();
-	end = new GridNode();
-	start->placed = false;
-	end->placed = false;
-	//// Create some textures for testing.
-	//m_texture = new aie::Texture("./textures/hero.png");
-	//m_texture2 = new aie::Texture("./textures/rock_large.png");
-	//m_font = new aie::Font("./font/consolas.ttf", 24);
+	m_2DRenderer = new aie::Renderer2D();
 
+	// Initialise the font
+	m_Font = new aie::Font("./font/consolas.ttf", 24);
+
+	// Initialises the PaathFinder
+	m_Pathfinder = new PathFinder();
+
+	// Initialises the start node
+	m_Start = new GridNode();
+
+	// Initialises the end node
+	m_End = new GridNode();
+
+	// Sets the start and end node
+	m_Start->placed = false;
+	m_End->placed = false;
+	
+	//m_Agent = new Agent();
+	// Sets the pathfinding type (temp)
+	m_PathfindType = 2;
+
+	// Creates a timer
+	m_Timer = 0;
 }
 
+// Game's destructor
 Game2D::~Game2D()
-{
-	//// Deleted the textures.
-	//delete m_font;
-	//delete m_texture;
-	//delete m_texture2;
+{/*
+	delete m_Agent;
+	m_Agent = nullptr;*/
+
+	// Deletes the end node
+	delete m_End;
+	m_End = nullptr;
+
+	// Deletes the start node
+	delete m_Start;
+	m_Start = nullptr;
 
 	// Deletes the pathfinder
-	delete pathfinder;
+	delete m_Pathfinder;
+	m_Pathfinder = nullptr;
+
+	// Deletes the font
+	delete m_Font;
+	m_Font = nullptr;
 
 	// Delete the renderer.
-	delete m_2dRenderer;
+	delete m_2DRenderer;
+	m_2DRenderer = nullptr;
 }
 
+// Game's update loop
 void Game2D::Update(float deltaTime)
 {
-	//// Update the player.
-	//m_Player->Update(deltaTime);
+	// Updates the timer
+	m_Timer += deltaTime;
 
-	//// Input example: Update the camera position using the arrow keys.
+	// Input example: Update the camera position using the arrow keys.
 	aie::Input* input = aie::Input::GetInstance();
+
+	// Sets the Camera
 	float camPosX;
 	float camPosY;
+	m_2DRenderer->GetCameraPos(camPosX, camPosY);
+	m_2DRenderer->SetCameraPos(camPosX, camPosY);
 
-	m_2dRenderer->GetCameraPos(camPosX, camPosY);
-	/*if (input->IsKeyDown(aie::INPUT_KEY_W))
-		camPosY += 500.0f * deltaTime;
 
-	if (input->IsKeyDown(aie::INPUT_KEY_S))
-		camPosY -= 500.0f * deltaTime;
-
-	if (input->IsKeyDown(aie::INPUT_KEY_A))
-		camPosX -= 500.0f * deltaTime;
-
-	if (input->IsKeyDown(aie::INPUT_KEY_D))
-		camPosX += 500.0f * deltaTime;*/
-
-	m_2dRenderer->SetCameraPos(camPosX, camPosY);
-
-	// Places start point
-	if (input->IsMouseButtonDown(aie::INPUT_MOUSE_BUTTON_LEFT))
+	// Places start point if LMB is pressed
+	if  (input->IsMouseButtonDown(aie::INPUT_MOUSE_BUTTON_LEFT))
 	{
-		if ((input->GetMouseX()) >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0)
-		{
-			
-			start->placed = false;
-			
+		if ((input->GetMouseX()) >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0 || !m_Pathfinder->IsBlocked(input->GetMouseX() / NODE_SIZE, input->GetMouseY() / NODE_SIZE))
+		{			
 		}
+
 		else
 		{
-			start->position.x = input->GetMouseX() / NODE_SIZE;
-			start->position.y = input->GetMouseY() / NODE_SIZE;
-			start->placed = true;
+			m_Start->position.x = input->GetMouseX() / NODE_SIZE;
+			m_Start->position.y = input->GetMouseY() / NODE_SIZE;
+			m_Start->placed = true;
 		}
 	}
 
-	// Places end point
+	// Places end point if RMB is pressed
 	if (input->IsMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT))
 	{
-		if (input->GetMouseX() >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0)
+		if (input->GetMouseX() >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0 || !m_Pathfinder->IsBlocked(input->GetMouseX() / NODE_SIZE, input->GetMouseY() / NODE_SIZE))
 		{
-			end->placed = false;
 		}
+
 		else
 		{
-			end->position.x = input->GetMouseX() / NODE_SIZE;
-			end->position.y = input->GetMouseY() / NODE_SIZE;
-			end->placed = true;
+			m_End->position.x = input->GetMouseX() / NODE_SIZE;
+			m_End->position.y = input->GetMouseY() / NODE_SIZE;
+			m_End->placed = true;
 		}
 	}
 
+	// Places blocked path if MMB is pressed
 	if (input->IsMouseButtonDown(aie::INPUT_MOUSE_BUTTON_MIDDLE))
 	{
-		if (input->GetMouseX() >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0)
-		{
-			
+		if (input->GetMouseX() >= (NODE_SIZE * GRID_SIZE) || (input->GetMouseY()) >= (NODE_SIZE * GRID_SIZE) || input->GetMouseX() < 0 || input->GetMouseY() < 0 || (input->GetMouseX() / NODE_SIZE) == m_End->position.x && (input->GetMouseY() / NODE_SIZE) == m_End->position.y || (input->GetMouseX() / NODE_SIZE) == m_Start->position.x && (input->GetMouseY() / NODE_SIZE) == m_Start->position.y)
+		{	
 		}
+
 		else
 		{
 			int x = input->GetMouseX() / NODE_SIZE;
 			int y = input->GetMouseY() / NODE_SIZE;
-			pathfinder->SetBlocked(x, y);
+			m_Pathfinder->SetBlocked(x, y);
 		}
-
 	}
-	// Exit the application if escape is pressed.
+
+	m_Agent->Update(m_2DRenderer, m_Font);
+
+	// Exit the application if ESCAPE is pressed.
 	if (input->IsKeyDown(aie::INPUT_KEY_ESCAPE))
 	{
 		aie::Application* application = aie::Application::GetInstance();
@@ -117,61 +132,53 @@ void Game2D::Update(float deltaTime)
 	}
 }
 
+// Game's drawing
 void Game2D::Draw()
 {
+	// Updates the instance
 	aie::Application* application = aie::Application::GetInstance();
-	float time = application->GetTime();
 
+	// Retrieves the time
+	float time = application->GetTime();
+	
 	// Wipe the screen to clear away the previous frame.
 	application->ClearScreen();
 
 	// Prepare the renderer. This must be called before any sprites are drawn.
-	m_2dRenderer->Begin();
+	m_2DRenderer->Begin();
 
-	pathfinder->DrawGrid(m_2dRenderer);
-	pathfinder->DrawStart(m_2dRenderer, start);
-	pathfinder->DrawEnd(m_2dRenderer, end);
+	// Renders the grid
+	m_Pathfinder->DrawGrid(m_2DRenderer);
 
-	if (start->placed == true && end->placed == true)
+	// Draws the path beteen the start and the end node
+	if (m_Start->placed == true && m_End->placed == true)
 	{
-		pathfinder->PathFind(m_2dRenderer, start, end);
+		// Draws path
+		m_Pathfinder->PathFind(m_2DRenderer, m_Start, m_End, m_PathfindType);
 	}
 
-	//// Draw the player.
-	//m_Player->Draw(m_2dRenderer);
+	// Draws the start node
+	m_Pathfinder->DrawStart(m_2DRenderer, m_Start);
 
-	//// Draw a thin line.
-	//m_2dRenderer->DrawLine(150.0f, 400.0f, 250.0f, 500.0f, 2.0f);
+	// Draws the end node
+	m_Pathfinder->DrawEnd(m_2DRenderer, m_End);
 
-	//// Draw a sprite
-	//m_2dRenderer->DrawSprite(m_texture2, 200.0f, 200.0f);
-
-	//// Draw a moving purple circle.
-	//m_2dRenderer->SetRenderColour(1.0f, 0.0f, 1.0f, 1.0f);
-	//m_2dRenderer->DrawCircle(sin(time) * 100.0f + 450.0f, 200.0f, 50.0f);
-
-	//// Draw a rotating sprite with no texture, coloured yellow.
-	//m_2dRenderer->SetRenderColour(1.0f, 1.0f, 0.0f, 1.0f);
-	//m_2dRenderer->DrawSprite(nullptr, 700.0f, 200.0f, 50.0f, 50.0f, time);
-	//m_2dRenderer->SetRenderColour(1.0f, 1.0f, 1.0f, 1.0f);
-
-	//// Demonstrate animation.
-	//float animSpeed = 10.0f;
-	//int frame = ((int)(time * animSpeed) % 6);
-	//float size = 1.0f / 6.0f;
-	//m_2dRenderer->SetUVRect(frame * size, 0.0f, size, 1.0f);
-	//m_2dRenderer->DrawSprite(m_texture, 900.0f, 200.0f, 100.0f, 100.0f);
-	//m_2dRenderer->SetUVRect(0.0f, 0.0f, 1.0f, 1.0f);
-	//
-	//// Draw some text.
-	//float windowHeight = (float)application->GetWindowHeight();
-	//char fps[32];
-	//sprintf_s(fps, 32, "FPS: %i", application->GetFPS());
-	//m_2dRenderer->DrawText2D(m_font, fps, 15.0f, windowHeight - 32.0f);
-	//m_2dRenderer->DrawText2D(m_font, "Arrow keys to move.", 15.0f, windowHeight - 64.0f);
-	//m_2dRenderer->DrawText2D(m_font, "WASD to move camera.", 15.0f, windowHeight - 96.0f);
-	//m_2dRenderer->DrawText2D(m_font, "Press ESC to quit!", 15.0f, windowHeight - 128.0f);
+	// Draws the agent
+	m_Agent->Draw(m_2DRenderer, m_Font);
 
 	//// Done drawing sprites. Must be called at the end of the Draw().
-	m_2dRenderer->End();
+	m_2DRenderer->End();
+}
+
+void Game2D::TogglePathfindType()
+{
+	if (m_PathfindType == 1)
+	{
+		m_PathfindType = 2;
+	}
+
+	else
+	{
+		m_PathfindType = 1;
+	}
 }

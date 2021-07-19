@@ -171,6 +171,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Agent.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Game2D.cpp" />
     <ClCompile Include="GridNode.cpp" />
     <ClCompile Include="Heap.cpp" />
@@ -178,11 +180,16 @@
     <ClCompile Include="PathFinder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Agent.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="Colour.h" />
     <ClInclude Include="DynamicArray.h" />
     <ClInclude Include="Game2D.h" />
     <ClInclude Include="GridNode.h" />
     <ClInclude Include="Heap.h" />
     <ClInclude Include="PathFinder.h" />
+    <ClInclude Include="PositionAABB.h" />
+    <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
