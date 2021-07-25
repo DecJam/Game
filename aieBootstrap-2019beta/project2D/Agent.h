@@ -12,21 +12,16 @@ public:
 	Agent();
 	~Agent();
 
-	void Update(aie::Renderer2D* renderer, aie::Font* font);
-	void Draw(aie::Renderer2D* renderer, aie::Font* font);
+	void Update(aie::Renderer2D* renderer, aie::Font* font, PathFinder* pathfinder);
+	void Draw(aie::Renderer2D* renderer, aie::Font* font, PathFinder* pathfinder);
 	
 private:
-	
 
-	PathFinder* m_Pathfinder;
 
-	Vector2* m_Position;
-	Vector2* m_Destination;
+	GridNode* m_Position;
+	GridNode* m_Destination;
 
-	GridNode* m_Start;
-	GridNode* m_End;
-
-	DynamicArray<GridNode*> FinalList;
+	DynamicArray<GridNode*> m_FinalList;
 
 };
 

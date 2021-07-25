@@ -26,7 +26,8 @@ Game2D::Game2D(const char* title, int width, int height, bool fullscreen) : Game
 	m_Start->placed = false;
 	m_End->placed = false;
 	
-	//m_Agent = new Agent();
+	m_Agent = new Agent();
+
 	// Sets the pathfinding type (temp)
 	m_PathfindType = 2;
 
@@ -36,9 +37,9 @@ Game2D::Game2D(const char* title, int width, int height, bool fullscreen) : Game
 
 // Game's destructor
 Game2D::~Game2D()
-{/*
+{
 	delete m_Agent;
-	m_Agent = nullptr;*/
+	m_Agent = nullptr;
 
 	// Deletes the end node
 	delete m_End;
@@ -122,7 +123,7 @@ void Game2D::Update(float deltaTime)
 		}
 	}
 
-	m_Agent->Update(m_2DRenderer, m_Font);
+	m_Agent->Update(m_2DRenderer, m_Font, m_Pathfinder);
 
 	// Exit the application if ESCAPE is pressed.
 	if (input->IsKeyDown(aie::INPUT_KEY_ESCAPE))
@@ -164,7 +165,7 @@ void Game2D::Draw()
 	m_Pathfinder->DrawEnd(m_2DRenderer, m_End);
 
 	// Draws the agent
-	m_Agent->Draw(m_2DRenderer, m_Font);
+	m_Agent->Draw(m_2DRenderer, m_Font, m_Pathfinder);
 
 	//// Done drawing sprites. Must be called at the end of the Draw().
 	m_2DRenderer->End();

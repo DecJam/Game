@@ -105,13 +105,6 @@ void PathFinder::PathFind(aie::Renderer2D* renderer, GridNode* start, GridNode* 
 	{
 		if (DijkstrasPath(start->position.x, start->position.y, end->position.x, end->position.y, m_FinalPath, m_ClosedList))
 		{
-			renderer->SetRenderColour(0, 0, 255, 1.0f);
-			for (int i = 0; i < m_ClosedList.GetSize(); i++)
-			{
-				node = m_ClosedList[i];
-				renderer->DrawBox((node->position.x * NODE_SIZE), (node->position.y * NODE_SIZE), NODE_SIZE * 0.9f, NODE_SIZE * 0.9f, 0.0f, 0.0f);
-			}
-
 			renderer->SetRenderColour(0, 255, 100, 255);
 			for (int i = 0; i < m_FinalPath.GetSize(); i++)
 			{
@@ -127,16 +120,6 @@ void PathFinder::PathFind(aie::Renderer2D* renderer, GridNode* start, GridNode* 
 	{
 		if (AStar(start->position.x, start->position.y, end->position.x, end->position.y, m_FinalPath, m_ClosedList))
 		{
-			renderer->SetRenderColour(0, 0, 255, 1.0f);
-			for (int i = 0; i < m_ClosedList.GetSize(); i++)
-			{
-				node = m_ClosedList[i];
-				if (node != nullptr)
-				{
-					renderer->DrawBox((node->position.x * NODE_SIZE), (node->position.y * NODE_SIZE), NODE_SIZE * 0.9f, NODE_SIZE * 0.9f, 0.0f, 0.0f);
-				}
-			}		
-
 			renderer->SetRenderColour(0, 255, 100, 1.0f);
 			for (int i = 0; i < m_FinalPath.GetSize(); i++)
 			{
