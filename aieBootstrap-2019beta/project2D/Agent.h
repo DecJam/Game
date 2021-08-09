@@ -2,8 +2,9 @@
 #include "Vector2.h"
 #include "GridNode.h"
 #include "PathFinder.h"
-#include "DynamicArray.h"
 #include "Renderer2D.h"
+#include <vector>
+#include <iostream>
 
 class Agent
 {
@@ -21,7 +22,7 @@ private:
 	GridNode* m_Position;
 	GridNode* m_Destination;
 
-	DynamicArray<GridNode*> m_FinalList;
+	std::vector<GridNode*> m_FinalList;
 
 };
 

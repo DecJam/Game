@@ -106,7 +106,7 @@ void PathFinder::PathFind(aie::Renderer2D* renderer, GridNode* start, GridNode* 
 		if (DijkstrasPath(start->position.x, start->position.y, end->position.x, end->position.y, m_FinalPath, m_ClosedList))
 		{
 			renderer->SetRenderColour(0, 255, 100, 255);
-			for (int i = 0; i < m_FinalPath.GetSize(); i++)
+			for (int i = 0; i < m_FinalPath.size(); i++)
 			{
 				GridNode* node;
 				node = m_FinalPath[i];
@@ -121,7 +121,7 @@ void PathFinder::PathFind(aie::Renderer2D* renderer, GridNode* start, GridNode* 
 		if (AStar(start->position.x, start->position.y, end->position.x, end->position.y, m_FinalPath, m_ClosedList))
 		{
 			renderer->SetRenderColour(0, 255, 100, 1.0f);
-			for (int i = 0; i < m_FinalPath.GetSize(); i++)
+			for (int i = 0; i < m_FinalPath.size(); i++)
 			{
 				node = m_FinalPath[i];
 				renderer->DrawBox((node->position.x * NODE_SIZE), (node->position.y * NODE_SIZE), NODE_SIZE * 0.9f, NODE_SIZE * 0.9f, 0.0f, 0.0f);
@@ -172,7 +172,7 @@ GridNode* PathFinder::GetNodeByPos(int x, int y)
 }
 
 // The Dijkstras shortest path algorithm
-bool PathFinder::DijkstrasPath(int startX, int startY, int endX, int endY, DynamicArray<GridNode*>& finalPath, DynamicArray<GridNode*>& closedList)
+bool PathFinder::DijkstrasPath(int startX, int startY, int endX, int endY, std::vector<GridNode*>& finalPath, std::vector<GridNode*>& closedList)
 {
 	GridNode* start;
 	GridNode* end;
@@ -185,8 +185,8 @@ bool PathFinder::DijkstrasPath(int startX, int startY, int endX, int endY, Dynam
 	end = GetNodeByPos(endX, endY);
 
 	 //Clear finalPath
-	finalPath.Clear();
-	closedList.Clear();
+	finalPath.clear();
+	closedList.clear();
 
 	 //Check for invalid path
 	if (start == nullptr)
@@ -220,7 +220,7 @@ bool PathFinder::DijkstrasPath(int startX, int startY, int endX, int endY, Dynam
 
 		//Add Current to closed list
 		m_InClosedList[current->position.x][current->position.y] = true;
-		closedList.Add(current);
+		closedList.push_back(current);
 
 		//If Current is equal to the end node then path has been found
 		if (current == end)
@@ -233,7 +233,7 @@ bool PathFinder::DijkstrasPath(int startX, int startY, int endX, int endY, Dynam
 			}
 			while(current->previous != nullptr)
 			{				
-				finalPath.Add(current);
+				finalPath.push_back(current);
 				current = current->previous;
 			}
 
@@ -308,7 +308,7 @@ int PathFinder::Heuristic(GridNode* current, GridNode* end)
 }
 
 // the A* pathfinding algorithm
-bool PathFinder::AStar(int startX, int startY, int endX, int endY, DynamicArray<GridNode*>& finalPath, DynamicArray<GridNode*>& closedList)
+bool PathFinder::AStar(int startX, int startY, int endX, int endY, std::vector<GridNode*>& finalPath, std::vector<GridNode*>& closedList)
 {
 	GridNode* start;
 	GridNode* end;
@@ -321,8 +321,8 @@ bool PathFinder::AStar(int startX, int startY, int endX, int endY, DynamicArray<
 	end = GetNodeByPos(endX, endY);
 
 	//Clear finalPath
-	finalPath.Clear();
-	closedList.Clear();
+	finalPath.clear();
+	closedList.clear();
 
 	//Check for invalid path
 	if (start == nullptr)
@@ -373,7 +373,7 @@ bool PathFinder::AStar(int startX, int startY, int endX, int endY, DynamicArray<
 
 			while (current->previous != nullptr)
 			{
-				finalPath.Add(current);
+				finalPath.push_back(current);
 				current = current->previous;
 			}
 
@@ -397,7 +397,7 @@ bool PathFinder::AStar(int startX, int startY, int endX, int endY, DynamicArray<
 
 			else
 			{
-				closedList.Add(neighbour);
+				closedList.push_back(neighbour);
 				g = current->score.g;
 				if (n == 0 || n == 2 || n == 5 || n == 7)
 				{
@@ -475,7 +475,7 @@ void PathFinder::Unblock(int x, int y)
 	temp->traversable = true;
 }
 
-DynamicArray<GridNode*> PathFinder::GetFinalPath()
+std::vector<GridNode*>& PathFinder::GetFinalPath()
 {
 	return m_FinalPath;
 }

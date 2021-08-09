@@ -1,8 +1,9 @@
 #pragma once
 #include "GridNode.h"
 #include "Heap.h"
-#include "DynamicArray.h"
 #include "Renderer2D.h"
+#include <vector>
+#include <iostream>
 
 #define NEIGHBOUR_COUNT 8
 #define GRID_SIZE 104
@@ -39,13 +40,13 @@ public:
 	GridNode* GetNodeByPos(int x, int y);
 
 	// Dijkstras shortest path algorithm
-	bool DijkstrasPath(int startX, int startY, int endX, int endY, DynamicArray<GridNode*>& finalPath, DynamicArray<GridNode*>& openListArray);
+	bool DijkstrasPath(int startX, int startY, int endX, int endY, std::vector<GridNode*>& finalPath, std::vector<GridNode*>& openListArray);
 
 	// The heuristic for the A* algorithm
 	int Heuristic(GridNode* current, GridNode* end);
 
 	// A* algorithm for pathfinding
-	bool AStar(int startX, int startY, int endX, int endY, DynamicArray<GridNode*>& finalPath, DynamicArray<GridNode*>& openListArray);
+	bool AStar(int startX, int startY, int endX, int endY, std::vector<GridNode*>& finalPath, std::vector<GridNode*>& openListArray);
 
 	// checks if the node is blocked off
 	bool IsBlocked(int x, int y);
@@ -56,7 +57,7 @@ public:
 	// Unblocks the node
 	void Unblock(int x, int y);
 	
-	DynamicArray<GridNode*> GetFinalPath();
+	std::vector<GridNode*>& GetFinalPath();
 
 private:
 
@@ -70,10 +71,10 @@ private:
 	bool m_InOpenList[GRID_SIZE][GRID_SIZE] = { 0 };
 
 	// An array of closed list nodes
-	DynamicArray<GridNode*> m_ClosedList;
+	std::vector<GridNode*> m_ClosedList;
 
 	// An array of open list nodes
-	DynamicArray<GridNode*> m_FinalPath;
+	std::vector<GridNode*> m_FinalPath;
 
 	// A heap of nodes for an open list
 	Heap* m_OpenList;
